@@ -5,6 +5,6 @@
 Artículos de introducción a los RTOS (genéricos)
 
 
-= Details =
+= Listado de articulos =
 
 http://iar.com/website1/1.0.1.0/1622/1/
