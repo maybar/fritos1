@@ -1,13 +1,129 @@
-#summary One-sentence summary of this page.
+#summary Buenas prácticas en la codificación
 
-= Introduction =
+= Introducción =
 
-Add your content here.
-
+Artículo "10 tips for writing more maintainable embedded software" enviado por Miguel
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Tip #1: Avoid assembly code
+Of course, on a low end PIC you have no choice and on a high end ARM you probably don't need it, but between
+these two extremes there are a lot of platforms that use assembly code as a means to increase performance and
+reduce code size. However, the problem is that simply choosing to use assembly code can derail your project and
+set you back months.
+While assembly code allows you direct access to the machine's functionality, the performance benefit can easily be
+overridden by the difficulty in understanding just what is happening in a program. It is for precisely this reason that
+higher level languages, like C and Java, were conceived.
+Consider every piece of assembly code to be suspicious when debugging, since violation of a high level language's
+safety features is extremely easy. If you must use assembly, try to be wordy when commenting. In C or Java,
+comments can clutter the code, but in assembly the comments can save a lot of time and frustration.
+You may choose to comment blocks of assembly, but make sure there aren't more than 5 or 6 instructions in a
+block. Ideally, the algorithms used should be spelled out in pseudo-code directly in the comments (see Tip #8).
+
+Tip #2: Avoid comment creep
+This is a general programming tip, but one that becomes especially important in long-lifetime applications "
+manage your comments' association with the code they document. It can be very easy for comments to migrate as
+code is updated, and the result can be difficult to understand. The following example shows just how easily
+comment creep can happen over time:
+// This function adds two numbers and returns the result
+#if __DEBUG
+void printNumber(int num) {
+printf("Output: %d\n", num);
+}
+#endif
+// This function multiplies two numbers and returns the result
+int multiply(int a, int b) {
+return a*b;
+}
+int add(int a, int b) {
+#if __DEBUG
+// Debugging output
+printNumber(a+b);
+#endif
+return a+b;
+}
+Notice that the comment for the function 'add' is at the top of the listing while the actual function is further down.
+This can happen over time if there is a space between the comment and the function.
+Embedded Systems Design - Embedded.com
+The likely cause was the addition of the printNumber function between 'add' and its comment description. Later,
+someone saw that there was an addition function and it seemed logical to put multiply next to it " the comment
+creep has resulted in disjointed documentation within the code. To fight this problem, try keeping code inside the
+function it documents, or make the comment block very obvious by putting lines above and below the comments.
+
+Tip #3: Don't optimize prematurely.
+One of the cardinal sins in programming is premature optimisation. However, the rule is often broken in practice
+due to time constraints, sloppy coding, or overzealous engineers. Any program you write should start out as simple
+as it can possibly be and still provide the desired functionality " if performance is a requirement, try to implement
+the program simply, even if it does not match the performance.
+Once you have tested and debugged your complete unit (be it a program or a component of a larger system), then
+go back and optimise. Haphazardly optimising code can lead to a maintenance nightmare since optimised code is
+usually harder to understand, and you might not get the performance results you need. Ideally, use a profiler (such
+as gprof, which works with GCC, or Intel's VTune) to see where your bottlenecks are and focus on those areas "
+what really is slow may surprise you.
+
+Tip #4: ISRs should be simple
+Interrupt Service Routines (ISRs) should be as simple as possible, both for performance and maintenance reasons.
+ISRs, being asynchronous in nature, are inherently more difficult to debug than "regular" program code, so keeping
+their responsibility to a minimum is important for the overall maintainability of your application. Try to move any
+data processing out of your ISR and into your main program " the ISR can then be responsible only for grabbing the
+data (from hardware, for example) and placing it in a buffer for later use. A simple flag can be used to signal the
+main program that there is data to be processed.
+
+Tip #5: Leave debugging code in the source files
+During development, you will likely add a great deal of code that is designed for debugging " verbose output,
+assertions, LED blinking, etc. When a project is over, it may be tempting to remove those sections of code to clean
+up the overall application, especially if the debugging code was haphazardly added.
+While cleaning up the application is a noble pursuit, taking out the debugging code creates problems later. Anyone
+attempting to maintain that code will likely reproduce many of the steps created in the original development " if the
+code is already there it makes maintenance a whole lot easier. If the code needs to be removed in production
+builds, use conditional compilation or put the debugging code in a central module or library and don't link it into
+production builds. Initial development of the application should include time to document and clean up debugging
+code; the extra time spent will be well worth it.
+
+Tip #6: Write wrappers for system calls
+Try to separate low-level I/O routines from the higher-level program logic through interfaces, because a program
+can be made very difficult to manage by developing monolithically. Putting all of the functionality of an application
+into a few large functions makes code difficult to understand and much harder to update and debug. This is
+especially true with hardware interfaces. You may have direct access to hardware registers or I/O, or even an API
+provided by the platform's vendor, but there is a lot of motivation to create your own 'wrapper' interface.
+You usually do not have control over what the hardware does and if you have to change platforms in the future,
+having hardware-specific code in your application (API or direct manipulation, it doesn't matter which) will make it
+much more difficult to port.
+If you create your own wrapper interface, which can be as simple as creating macros that are defined to the
+hardware API, your code can be consistent and all the updates needed for porting will be in a centralised location.
+
+Tip #7: Break up functionality only as needed
+Embedded applications will differ from PC applications in that a lot of the functionality will be specialised to the
+hardware you are working with. Splitting up functional units into the smallest pieces possible is not advisable - keep
+the number of function calls in a single scope (function) to less than 5 or 6, and make functional units of the
+hardware correspond to functional units in the software.
+Breaking up the program any further will create a spider web of a call graph, making debugging and comprehension
+difficult.
+
+Tip #8: Documentation
+Keep all documentation with the code and, ideally, a copy of the hardware too. When documenting your application,
+try to put as much of the design and application model directly into the source code. If you have to keep it
+separate, put it in a source file as a giant comment and link it into the program.
+At the very least, if you use a version control system (such as CVS or Microsoft Source Safe), check the
+Embedded Systems Design - Embedded.com
+documentation into the same directory as your source " it is really easy to lose the documentation if it is not located
+with the source.
+Ideally, put all the documentation and source on a CD (or your choice of portable storage device) seal it in a bag
+with the hardware and development tools you are using and put that bag in a safe place " your successors will thank
+you.
+
+Tip #9: Don't be clever!
+Similar to premature optimisation, clever coding can lead to big trouble. Since C and C++ are still dominant
+languages in the embedded world, there is a huge number of ways to solve a single problem. Templates,
+inheritance, goto, the ternary operator (the "?"), the list goes on and on.
+Really clever programmers can come up with extremely compact and elegant ways to use these tools to solve
+problems. The problem is that usually only the programmer understands the clever solution (and will likely forget
+how it worked later).
+The only solution is to avoid cleverness and keep the use of esoteric language features to a minimum " for example,
+don't rely on short-circuit evaluation in C statements or use the ternary operator for program control (use an
+if-statement instead).
+
+Tip #10: Put all definitions in one place
+This one is easy; if you have a lot of constant definitions or conditional defines, keep them in a central location. This
+could be a single file or a source code directory, but if you bury a definition deep within your implementation, it will
+come back to bite you.
