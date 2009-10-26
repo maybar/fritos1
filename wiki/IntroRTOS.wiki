@@ -1,9 +1,4 @@
-#summary Introducción a los RTOS
-
-= Introduction =
-
-Artículos de introducción a los RTOS (genéricos)
-
+#summary Artículos de introducción a los RTOS
 
 = Listado de articulos =
 
