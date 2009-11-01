@@ -1,0 +1,47 @@
+Manual de uso de freeRTOS
+
+1.-Rutas de archivos de cabecera
+...\FreeRTOS\Source\portable\MPLAB\PIC24_dsPIC
+...\FreeRTOS\Source\include
+...\FreeRTOS\Demo\Common\include
+D:\Mis Documentos\Programacion\fritos1
+
+2. -Definir macro
+MPLAB_DSPIC_PORT
+
+3.- Adicionar a lista de compilación los siguientes archivos
+file_000=main.c
+...\FreeRTOS\Source\croutine.c
+...\FreeRTOS\Source\list.c
+...\FreeRTOS\Source\queue.c
+...\FreeRTOS\Source\tasks.c
+...\FreeRTOS\Source\portable\MPLAB\PIC24_dsPIC\port.c
+...\FreeRTOS\Source\portable\MemMang\heap_1.c
+...\FreeRTOS\Source\portable\MPLAB\PIC24_dsPIC\portasm_dsPIC.S
+
+...\FreeRTOS\Demo\Common\Minimal\BlockQ.c
+...\FreeRTOS\Demo\Common\Minimal\blocktim.c
+...\FreeRTOS\Demo\Common\Minimal\integer.c
+
+
+file_016=p33FJ128GP708.gld
+
+4.- EN main.c
+Añadir esta función
+void vApplicationIdleHook( void )
+{
+	/* Schedule the co-routines from within the idle task hook. */
+	vCoRoutineSchedule();
+}
+
+Incluir el archivo header del micro utilizado
+#include <p33FJ128GP708.h>
+
+
+Solo el kernel ocupa:
+Memoria de programa 3964 bytes
+Memoria de datos 5336 bytes
+
+Observaciones:
+- Necesario hacer un cast (signed portCHAR *)en el segundo parámetro de  xCreateTask
+- No da error si no se respeta el límite configMINIMAL_STACK_SIZE.
