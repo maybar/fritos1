@@ -45,3 +45,5 @@ Memoria de datos 5336 bytes
 Observaciones:
 - Necesario hacer un cast (signed portCHAR *)en el segundo parámetro de  xCreateTask
 - No da error si no se respeta el límite configMINIMAL_STACK_SIZE.
+
+Prueba cambio escritura
