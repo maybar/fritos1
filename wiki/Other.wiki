@@ -1,0 +1,16 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Add your content here.
+
+
+= Details =
+
+http://www.embedded.com/design/214302278;jsessionid=441EPBEOVH3MIQSNDLSCKHA
+
+http://www.embedded.com/design/214600266
+
+http://www.embedded.com/design/214502835
+
+crear una dll en c++ (búsqueda de google)
