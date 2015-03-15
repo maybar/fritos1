@@ -1,0 +1,5 @@
+# Introduction #
+
+En el anexo 1 pone como hacer para abrir los ejemplos que iban adjuntos a los pdf. La aplicación se llama Open Watcom, son 74MB y si se instala en el raíz de c:, d:... permite ejecutar correctamente los ejemplos.
+Me parece una buena herramienta para hacer los ejemplos durante las reunión y luego posteriormente que cada uno haga los ejemplos para su micro específico.
+Que os parece??
